@@ -199,3 +199,22 @@ func getVolcanoIDRegion(r *http.Request) (string, error) {
 
 	return volcanoID, nil
 }
+
+func getVolcanoRegionStats(r *http.Request) (string, error) {
+
+	volcanoID := strings.TrimPrefix(r.URL.Path, "/volcano/region/stats/")
+	var d string
+
+	err := db.QueryRow("select id FROM haz.volcano where id = $1", volcanoID).Scan(&d)
+
+	if err == sql.ErrNoRows {
+		return volcanoID, fmt.Errorf("Invalid query parameter volcanoID, no results")
+	}
+	if err != nil {
+		return volcanoID, fmt.Errorf("Invalid query parameter volcanoID")
+	}
+
+	return volcanoID, nil
+}
+
+

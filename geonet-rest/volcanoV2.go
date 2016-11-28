@@ -67,6 +67,7 @@ func quakesVolcanoRegionV2(r *http.Request, h http.Header, b *bytes.Buffer) *wef
 					locality,
 					intensity,
 					intensity_newzealand as "regionIntensity",
+					floor(mmid_newzealand) as "mmi",
 					quality
 				) as l
 			)) as properties
