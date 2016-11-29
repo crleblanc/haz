@@ -81,16 +81,17 @@ func getBreakDates(params *QueryParams) []string {
 	var date time.Time
 	var dateStr string
 	endDate := params.enddate
+
 	if endDate != "" {
 		if _, err := time.Parse(ISO_TIME_FORMAT, endDate); err == nil {
 			dateStr = endDate
 		} else {
 			log.Println("err", err)
-			date = time.Now()
+			date = time.Now().UTC()
 			dateStr = date.Format(ISO_DATE_FORMAT)
 		}
 	} else {
-		date = time.Now()
+		date = time.Now().UTC()
 		dateStr = date.Format(ISO_DATE_FORMAT)
 	}
 
@@ -960,11 +961,11 @@ func checkDateFormat(date string) (string, error) {
 	if date == "" {
 		return "", nil
 	} else if patternMatch(dateTimePattern, date) || patternMatch(dateTimePatternISO, date) {
-		return date + "UTC", nil
+		return date, nil
 	} else if patternMatch(dateHourPattern, date) {
-		return date + ":00:00UTC", nil
+		return date + ":00:00", nil
 	} else if patternMatch(datePattern, date) { // add hour
-		return date + " 00:00:00UTC", nil
+		return date + " 00:00:00", nil
 	} else {
 		return date, errors.New("Invalid date format:" + date)
 	}
