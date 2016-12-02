@@ -83,8 +83,9 @@ func getBreakDates(params *QueryParams) []string {
 	endDate := params.enddate
 
 	if endDate != "" {
-		if _, err := time.Parse(ISO_TIME_FORMAT, endDate); err == nil {
-			dateStr = endDate
+		endDate1 := strings.TrimRight(endDate, "Z")
+		if _, err := time.Parse(ISO_TIME_FORMAT, endDate1); err == nil {
+			dateStr = endDate1
 		} else {
 			log.Println("err", err)
 			date = time.Now().UTC()
@@ -127,7 +128,10 @@ func getBreakDates(params *QueryParams) []string {
 	//add start date
 	startdDate := params.startdate
 	if startdDate != "" {
-		breakDates = append(breakDates, startdDate)
+		startDate1 := strings.TrimRight(startdDate, "Z")
+		if _, err := time.Parse(ISO_TIME_FORMAT, startDate1); err == nil {
+			breakDates = append(breakDates, startDate1)
+		}
 	} else if dateStr != "" {
 		if !contains(breakDates, dateStr) {
 			breakDates = append(breakDates, dateStr)
@@ -961,11 +965,11 @@ func checkDateFormat(date string) (string, error) {
 	if date == "" {
 		return "", nil
 	} else if patternMatch(dateTimePattern, date) || patternMatch(dateTimePatternISO, date) {
-		return date, nil
+		return date + "Z", nil
 	} else if patternMatch(dateHourPattern, date) {
-		return date + ":00:00", nil
+		return date + ":00:00Z", nil
 	} else if patternMatch(datePattern, date) { // add hour
-		return date + " 00:00:00", nil
+		return date + " 00:00:00Z", nil
 	} else {
 		return date, errors.New("Invalid date format:" + date)
 	}
