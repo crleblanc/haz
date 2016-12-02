@@ -3,17 +3,24 @@ package main
 import (
 	"github.com/GeoNet/haz/database"
 	"github.com/GeoNet/weft"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	_ "github.com/lib/pq"
 	"log"
 	"net/http"
 	"os"
 	"time"
+	"github.com/aws/aws-sdk-go/aws/ec2metadata"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds"
 )
 
 // For setting Cache-Control and Surrogate-Control headers.
 const (
 	maxAge10    = "max-age=10"
 	maxAge300   = "max-age=300"
+	maxAge3600   = "max-age=3600"
 	maxAge86400 = "max-age=86400"
 )
 
@@ -37,9 +44,15 @@ const (
 	HtmlContent = "text/html; charset=utf-8"
 )
 
+const (
+	apiS3   = "api.geonet.org.nz"
+	sc3mlS3 = "http://seiscompml07.s3-website-ap-southeast-2.amazonaws.com/"
+)
+
 var (
-	db     database.DB
-	client *http.Client
+	db       database.DB
+	client   *http.Client
+	s3Client *s3.S3
 )
 
 // main connects to the database, sets up request routing, and starts the http server.
@@ -61,6 +74,25 @@ func main() {
 	client = &http.Client{
 		Timeout: timeout,
 	}
+
+	var sess *session.Session
+	if sess, err = session.NewSession(); err != nil {
+		log.Printf("ERROR creating AWS session 500s will be served %s", err)
+	}
+
+	// Credentials can come from environment var (e.g., for dev)
+	// or from the role provider when running in EC2.
+	// expire the role creds early to force updates.
+	creds := credentials.NewChainCredentials(
+		[]credentials.Provider{
+			&credentials.EnvProvider{},
+			&ec2rolecreds.EC2RoleProvider{
+				Client: ec2metadata.New(sess),
+				ExpiryWindow: time.Second * 30,
+			},
+		})
+
+	s3Client = s3.New(sess, &aws.Config{Credentials: creds})
 
 	log.Println("starting server")
 	http.Handle("/", handler())
