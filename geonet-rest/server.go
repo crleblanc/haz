@@ -108,15 +108,18 @@ func handler() http.Handler {
 
 func inbound(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// TODO this is a browser cache directive and does not make a lot
-		// of sense for an API.
-		w.Header().Set("Cache-Control", maxAge10)
 		switch r.Method {
 		case "GET":
 			// Routing is based on Accept query parameters
 			// e.g., version=1 in application/json;version=1
 			// so caching must Vary based on Accept.
 			w.Header().Set("Vary", "Accept")
+
+			// Default browser cache control (for CORS requests)
+			w.Header().Set("Cache-Control", maxAge10)
+			// Enable CORS
+			w.Header().Set("Access-Control-Allow-Methods", "GET")
+			w.Header().Set("Access-Control-Allow-Origin", "*")
 
 			h.ServeHTTP(w, r)
 		default:
