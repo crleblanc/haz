@@ -14,6 +14,19 @@ const quakeHistoryProtoSQL = `SELECT time, modificationTime, depth, magnitude, l
 				ST_Y(geom::geometry) as latitude
 			FROM haz.quakehistory WHERE publicid = $1 ORDER BY modificationtime DESC`
 
+const volcanoRegionHistoryProtoSQL = `SELECT publicid, time, time, depth, magnitude, locality,
+				floor(mmid_newzealand) as "mmi",
+				quality,
+				ST_X(geom::geometry) as longitude,
+				ST_Y(geom::geometry) as latitude
+			FROM haz.quakeapi q
+			WHERE in_newzealand
+			AND st_covers((select region from haz.volcano hv where id = $1 and q.depth < hv.depth), geom)
+			AND NOT deleted
+			AND time >= (now() - interval '%d days')
+			ORDER BY time DESC`
+
+
 const quakesProtoSQL = `SELECT publicid, time, modificationTime, depth, magnitude, locality,
 				floor(mmid_newzealand) as "mmi",
 				quality,
@@ -213,7 +226,7 @@ FROM perday GROUP BY day ORDER BY day
 const quakesPerDayInVolcanoRegionSQL = `WITH perdayInVolcanoRegion AS (
 SELECT date_trunc('day', time) as day
 FROM haz.quakeapi q
-WHERE in_newzealand AND st_covers((select region from haz.volcano hv where id = $1 and q.depth < hv.depth), geom) AND NOT deleted
+WHERE in_newzealand AND st_covers((select region from haz.volcano hv where id = $1 and q.depth < hv.depth), geom) AND NOT deleted AND time >= (now() - interval '%d days')
 )
 SELECT day, count(day)
 FROM perdayInVolcanoRegion GROUP BY day ORDER BY day
