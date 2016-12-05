@@ -47,6 +47,7 @@ func init() {
 	muxProto.HandleFunc("/volcano/val", weft.MakeHandlerAPI(valProto))
 	muxProto.HandleFunc("/news/geonet", weft.MakeHandlerAPI(newsProto))
 	muxProto.HandleFunc("/quake/stats", weft.MakeHandlerAPI(quakeStatsProto))
+	muxProto.HandleFunc("/volcano/region/stats/", weft.MakeHandlerAPI(quakeInVolcanoRegionStatsProto))
 
 	// muxDefault handles routes with no Accept version.
 	// soh routes
