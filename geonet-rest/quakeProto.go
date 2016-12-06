@@ -14,8 +14,6 @@ import (
 	"time"
 )
 
-const s3 = "http://seiscompml07.s3-website-ap-southeast-2.amazonaws.com/"
-
 func quakeStatsProto(r *http.Request, h http.Header, b *bytes.Buffer) *weft.Result {
 	if res := weft.CheckQuery(r, []string{}, []string{}); !res.Ok {
 		return res
@@ -248,7 +246,7 @@ func quakeTechnicalProto(r *http.Request, h http.Header, b *bytes.Buffer) *weft.
 		return res
 	}
 
-	by, res := getBytes(s3+strings.TrimPrefix(r.URL.Path, "/quake/technical/")+".xml", "")
+	by, res := getBytes(sc3mlS3 +strings.TrimPrefix(r.URL.Path, "/quake/technical/")+".xml", "")
 	if !res.Ok {
 		return res
 	}

@@ -8,6 +8,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"time"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/service/s3"
 )
 
 const tolerance float64 = 0.0001
@@ -150,6 +154,20 @@ func setup() {
 	ts = httptest.NewServer(handler())
 
 	client = &http.Client{}
+
+	var sess *session.Session
+	if sess, err = session.NewSession(); err != nil {
+		log.Printf("ERROR creating AWS session 500s will be served %s", err)
+	}
+
+	// Credentials can come from environment var (e.g., for dev)
+	// for testing.
+	creds := credentials.NewChainCredentials(
+		[]credentials.Provider{
+			&credentials.EnvProvider{},
+		})
+
+	s3Client = s3.New(sess, &aws.Config{Credentials: creds})
 }
 
 // teardown closes the db connection and  test server.  Defer this after setup() e.g.,

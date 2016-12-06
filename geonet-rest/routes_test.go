@@ -44,6 +44,10 @@ var routes = wt.Requests{
 	{ID: wt.L(), Accept: V2GeoJSON, Content: V2GeoJSON, Surrogate: maxAge10, URL: "/volcano/quake/ngauruhoe"},
 	{ID: wt.L(), Accept: V2GeoJSON, Content: V2GeoJSON, Surrogate: maxAge10, URL: "/volcano/region/ngauruhoe"},
 
+
+	// TODO - this route test needs AWS S3 readonly credentials for Travis.
+	//{ID: wt.L(), Accept: V2GeoJSON, Content: V2GeoJSON, Surrogate: maxAge3600, URL: "/delta/mark"},
+
 	// GeoJSON routes without explicit accept should route to latest version
 	{ID: wt.L(), Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", Content: V2GeoJSON, Surrogate: maxAge10, URL: "/quake/2013p407387"},
 	{ID: wt.L(), Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", Content: V2GeoJSON, Surrogate: maxAge10, URL: "/quake?MMI=3"},
@@ -63,6 +67,9 @@ var routes = wt.Requests{
 	// V2 JSON routes
 	{ID: wt.L(), Accept: V2JSON, Content: V2JSON, Surrogate: maxAge300, URL: "/news/geonet"},
 	{ID: wt.L(), Accept: V2JSON, Content: V2JSON, Surrogate: maxAge300, URL: "/quake/stats"},
+
+	// TODO - this route test needs AWS S3 readonly credentials for Travis.
+	//{ID: wt.L(), Accept: V2JSON, Content: V2JSON, Surrogate: maxAge3600, URL: "/delta/mark"},
 
 	// JSON routes without explicit accept should route to latest version
 	{ID: wt.L(), Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", Content: V2JSON, Surrogate: maxAge300, URL: "/news/geonet"},
@@ -130,6 +137,9 @@ var routes = wt.Requests{
 	{ID: wt.L(), Accept: protobuf, Content: protobuf, Surrogate: maxAge10, URL: "/volcano/val"},
 	{ID: wt.L(), Accept: protobuf, Content: protobuf, Surrogate: maxAge300, URL: "/news/geonet"},
 	{ID: wt.L(), Accept: protobuf, Content: protobuf, Surrogate: maxAge300, URL: "/quake/stats"},
+
+	// TODO - this route test needs AWS S3 readonly credentials for Travis.
+	//{ID: wt.L(), Accept: protobuf, Content: protobuf, Surrogate: maxAge3600, URL: "/delta/mark"},
 }
 
 // Test all routes give the expected response.  Also check with

@@ -130,3 +130,6 @@ zip to EB.
 cd deploy
 zip wfs.zip Dockerrun.aws.json .ebextensions/*
 ```
+
+`geonet-rest` needs read only access to the api.geonet.org.nz bucket.  This can be granted by attaching a suitable policy to the 
+`aws-elasticbeanstalk-ec2-role` role.
