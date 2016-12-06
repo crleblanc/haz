@@ -8,6 +8,8 @@ import (
 	"os"
 )
 
+const maxAge10 = "max-age=10"
+
 var db database.DB
 
 // main connects to the database, sets up request routing, and starts the http server.
@@ -40,6 +42,12 @@ func inbound(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
+			// Default browser cache control (for CORS requests)
+			w.Header().Set("Cache-Control", maxAge10)
+			// Enable CORS
+			w.Header().Set("Access-Control-Allow-Methods", "GET")
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+
 			h.ServeHTTP(w, r)
 		default:
 			weft.Write(w, r, &weft.MethodNotAllowed)
