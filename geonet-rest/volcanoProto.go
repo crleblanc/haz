@@ -65,7 +65,7 @@ func quakeInVolcanoRegionStatsProto(r *http.Request, h http.Header, b *bytes.Buf
 		return weft.BadRequest(err.Error())
 	}
 
-	if rows, err = db.Query(quakesPerDayInVolcanoRegionSQL, volcanoId); err != nil {
+	if rows, err = db.Query(fmt.Sprintf(quakesPerDayInVolcanoRegionSQL, 90), volcanoId); err != nil {
 		return weft.ServiceUnavailableError(err)
 	}
 	defer rows.Close()
@@ -144,5 +144,56 @@ func quakeInVolcanoRegionStatsProto(r *http.Request, h http.Header, b *bytes.Buf
 	h.Set("Content-Type", protobuf)
 	h.Set("Surrogate-Control", maxAge300)
 
+	return &weft.StatusOK
+}
+
+func volcanoRegionHistoryProto(r *http.Request, h http.Header, b *bytes.Buffer) *weft.Result {
+	if res := weft.CheckQuery(r, []string{}, []string{}); !res.Ok {
+		return res
+	}
+
+	var volcanoId string
+	var err error
+
+
+	if volcanoId, err = getVolcanoRegionHistory(r); err != nil {
+		return weft.BadRequest(err.Error())
+	}
+
+	var rows *sql.Rows
+
+	if rows, err = db.Query(fmt.Sprintf(volcanoRegionHistoryProtoSQL, 90), volcanoId); err != nil {
+		return weft.ServiceUnavailableError(err)
+	}
+
+	var quakes []*haz.Quake
+
+	for rows.Next() {
+		var t time.Time
+		var mt time.Time
+		q := haz.Quake{}
+
+		if err = rows.Scan(&q.PublicID, &t, &mt, &q.Depth,
+			&q.Magnitude, &q.Locality, &q.Mmi, &q.Quality,
+			&q.Longitude, &q.Latitude); err != nil {
+			return weft.ServiceUnavailableError(err)
+		}
+
+		q.Time = &haz.Timestamp{Sec: t.Unix(), Nsec: int64(t.Nanosecond())}
+		q.ModificationTime = &haz.Timestamp{Sec: mt.Unix(), Nsec: int64(mt.Nanosecond())}
+
+		quakes = append(quakes, &q)
+	}
+
+	qs := haz.Quakes{Quakes: quakes}
+
+	var by []byte
+
+	if by, err = proto.Marshal(&qs); err != nil {
+		return weft.ServiceUnavailableError(err)
+	}
+
+	b.Write(by)
+	h.Set("Content-Type", protobuf)
 	return &weft.StatusOK
 }
