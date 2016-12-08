@@ -33,6 +33,8 @@ func init() {
 	muxV2GeoJSON.HandleFunc("/volcano/quake/", weft.MakeHandlerAPI(quakesVolcanoRegionV2))
 	muxV2GeoJSON.HandleFunc("/volcano/region/", weft.MakeHandlerAPI(volcanoRegionV2))
 	muxV2GeoJSON.HandleFunc("/delta/mark", weft.MakeHandlerAPI(marksV2))
+	muxV2GeoJSON.HandleFunc("/network/sensor", weft.MakeHandlerAPI(sensorV2))
+
 
 	muxV2JSON = http.NewServeMux()
 	muxV2JSON.HandleFunc("/news/geonet", weft.MakeHandlerAPI(newsV2))
@@ -78,6 +80,7 @@ func init() {
 	muxDefault.HandleFunc("/quakes/services/quakes/newzealand/", weft.MakeHandlerAPI(quakesWWWnz))
 	muxDefault.HandleFunc("/quake/services/quake/", weft.MakeHandlerAPI(quakeWWW))
 	muxDefault.HandleFunc("/delta/mark", weft.MakeHandlerAPI(marksV2))
+	muxDefault.HandleFunc("/network/sensor", weft.MakeHandlerAPI(sensorV2))
 
 	for _, v := range []*http.ServeMux{muxV1JSON, muxV2JSON, muxV1GeoJSON, muxV2GeoJSON, muxDefault, muxProto} {
 		v.HandleFunc("/", weft.MakeHandlerPage(docs))
