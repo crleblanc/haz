@@ -20,6 +20,8 @@ var sensorGeoJSON = map[string]bool{
 	"shortperiodboreholeseismometer": true,
 	"shortperiodseismometer": true,
 	"strongmotionsensor": true,
+	"gpsantenna": true,
+	"metsensor": true,
 }
 
 // Proxies sensor *.geojson from S3
