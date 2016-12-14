@@ -43,6 +43,8 @@ var routes = wt.Requests{
 	{ID: wt.L(), Accept: V2GeoJSON, Content: V2GeoJSON, Surrogate: maxAge10, URL: "/volcano/val"},
 	{ID: wt.L(), Accept: V2GeoJSON, Content: V2GeoJSON, Surrogate: maxAge10, URL: "/volcano/quake/ngauruhoe"},
 	{ID: wt.L(), Accept: V2GeoJSON, Content: V2GeoJSON, Surrogate: maxAge10, URL: "/volcano/region/ngauruhoe"},
+	{ID: wt.L(), Accept: V2GeoJSON, Content: V2GeoJSON, Surrogate: maxAge10, URL: "/shaking/pga"},
+	{ID: wt.L(), Accept: V2GeoJSON, Content: V2GeoJSON, Surrogate: maxAge10, URL: "/shaking/pgv"},
 
 
 	// GeoJSON routes without explicit accept should route to latest version
@@ -110,6 +112,7 @@ var routes = wt.Requests{
 	{ID: wt.L(), URL: "/soh/up"},
 	{ID: wt.L(), URL: "/soh/esb"},
 	{ID: wt.L(), Status: http.StatusServiceUnavailable, URL: "/soh/impact"}, // not enough data so gets an error
+	{ID: wt.L(), Status: http.StatusServiceUnavailable, URL: "/soh/shaking"}, // not enough data so gets an error
 
 	// protobuf routes
 	{ID: wt.L(), Accept: protobuf, Content: protobuf, Surrogate: maxAge10, URL: "/quake/2013p407387"},

@@ -48,3 +48,37 @@ func intensityV2(r *http.Request, h http.Header, b *bytes.Buffer) *weft.Result {
 
 	return &weft.StatusOK
 }
+
+func pgaV2(r *http.Request, h http.Header, b *bytes.Buffer) *weft.Result {
+	if res := weft.CheckQuery(r, []string{}, []string{}); !res.Ok {
+		return res
+	}
+
+	var d string
+
+	if err := db.QueryRow(pgaV2SQL).Scan(&d); err != nil {
+		return weft.ServiceUnavailableError(err)
+	}
+
+	b.WriteString(d)
+
+	h.Set("Content-Type", V2GeoJSON)
+	return &weft.StatusOK
+}
+
+func pgvV2(r *http.Request, h http.Header, b *bytes.Buffer) *weft.Result {
+	if res := weft.CheckQuery(r, []string{}, []string{}); !res.Ok {
+		return res
+	}
+
+	var d string
+
+	if err := db.QueryRow(pgvV2SQL).Scan(&d); err != nil {
+		return weft.ServiceUnavailableError(err)
+	}
+
+	b.WriteString(d)
+
+	h.Set("Content-Type", V2GeoJSON)
+	return &weft.StatusOK
+}

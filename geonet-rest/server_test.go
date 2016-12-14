@@ -135,6 +135,30 @@ func setup() {
 		}
 	}
 
+	_, err = tdb.Exec("select impact.add_pga_vertical($1, $2, $3, $4, $5)",
+	"WGTN.10", 176.49, -40.2, time.Now().UTC(), 1.2)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = tdb.Exec("select impact.add_pga_horizontal($1, $2, $3, $4, $5)",
+		"WGTN.10", 176.49, -40.2, time.Now().UTC(), 0.6)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = tdb.Exec("select impact.add_pgv_vertical($1, $2, $3, $4, $5)",
+		"WGTN.10", 176.49, -40.2, time.Now().UTC(), 16.1)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = tdb.Exec("select impact.add_pgv_horizontal($1, $2, $3, $4, $5)",
+		"WGTN.10", 176.49, -40.2, time.Now().UTC(), 20.1)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	tdb.Close()
 
 	// switch back to the correct user for the tests.

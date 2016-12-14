@@ -86,7 +86,6 @@ func sohEsb(w http.ResponseWriter, r *http.Request) {
 }
 
 // returns a simple state of health page.  If the count of measured intensities falls below 50 this it also returns an http status of 500.
-//func impactSOH(r *http.Request, h http.Header, b *bytes.Buffer) *weft.Result {
 // Not useful for inclusion in app metrics so weft not used.
 func impactSOH(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", HtmlContent)
@@ -120,6 +119,49 @@ func impactSOH(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte(`<tr class="tr error"><td>shaking measured</td><td>` + strconv.Itoa(meas) + ` < 50</td></tr>`))
 		} else {
 			w.Write([]byte(`<tr><td>shaking measured</td><td>` + strconv.Itoa(meas) + ` >= 50</td></tr>`))
+		}
+	} else {
+		w.Write([]byte(`<tr class="tr error"><td>DB error</td><td>` + err.Error() + `</td></tr>`))
+	}
+	w.Write([]byte(`</table>`))
+
+	w.Write([]byte(foot))
+}
+
+// returns a simple state of health page.  If the count of pga or pgv falls below 50 returns an http status of 500.
+// Not useful for inclusion in app metrics so weft not used.
+func shakingSOH(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", HtmlContent)
+
+	if res := weft.CheckQuery(r, []string{}, []string{}); !res.Ok {
+		w.Header().Set("Surrogate-Control", "max-age=86400")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	var meas int
+	err := db.QueryRow("select least(( select count(*) from impact.pga)::int,( select count(*) from impact.pgv)::int)").Scan(&meas)
+	if err != nil {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		log.Printf("ERROR: %v", err)
+	}
+
+	if meas < 50 {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		log.Printf("ERROR: less than 50 shaking stations %d", meas)
+	}
+
+	w.Write([]byte(head))
+	w.Write([]byte(`<p>Current time is: ` + time.Now().UTC().String() + `</p>`))
+	w.Write([]byte(`<h3>Shaking PGA, PGV</h3>`))
+
+	w.Write([]byte(`<table><tr><th>Impact</th><th>Count</th></tr>`))
+
+	if err == nil {
+		if meas < 50 {
+			w.Write([]byte(`<tr class="tr error"><td>shaking min count pga, pgv</td><td>` + strconv.Itoa(meas) + ` < 50</td></tr>`))
+		} else {
+			w.Write([]byte(`<tr><td>shaking min count pga, pgv</td><td>` + strconv.Itoa(meas) + ` >= 50</td></tr>`))
 		}
 	} else {
 		w.Write([]byte(`<tr class="tr error"><td>DB error</td><td>` + err.Error() + `</td></tr>`))
