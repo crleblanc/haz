@@ -38,6 +38,8 @@ func sohEsb(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Surrogate-Control", "max-age=10")
+
 	var b bytes.Buffer
 
 	b.Write([]byte(head))
@@ -96,6 +98,8 @@ func impactSOH(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Surrogate-Control", "max-age=10")
+
 	var meas int
 	err := db.QueryRow("select count(*) from impact.intensity_measured").Scan(&meas)
 	if err != nil {
@@ -138,6 +142,8 @@ func shakingSOH(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+
+	w.Header().Set("Surrogate-Control", "max-age=10")
 
 	var meas int
 	err := db.QueryRow("select least(( select count(*) from impact.pga)::int,( select count(*) from impact.pgv)::int)").Scan(&meas)
@@ -183,6 +189,8 @@ func up(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Surrogate-Control", "max-age=10")
+
 	w.Write([]byte("<html><head></head><body>up</body></html>"))
 }
 
@@ -197,6 +205,8 @@ func soh(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+
+	w.Header().Set("Surrogate-Control", "max-age=10")
 
 	var c int
 
