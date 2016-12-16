@@ -66,3 +66,132 @@ END LOOP;
 END;
 $$
 LANGUAGE plpgsql;
+
+CREATE FUNCTION impact.add_pga_vertical(source_n TEXT, longitude_n NUMERIC, latitude_n NUMERIC, time_n TIMESTAMP(6) WITH TIME ZONE, value_n NUMERIC) RETURNS VOID AS
+$$
+DECLARE
+  tries INTEGER = 0;
+BEGIN
+  LOOP
+    UPDATE impact.pga
+    SET vertical = value_n, time_v = time_n
+    WHERE source = source_n
+          AND pga.vertical < value_n;
+    IF found THEN
+      RETURN;
+    END IF;
+
+    DECLARE
+      loc GEOGRAPHY = ST_GeogFromWKB(st_AsEWKB(st_setsrid(st_makepoint(longitude_n, latitude_n), 4326)));
+    BEGIN
+      INSERT INTO impact.pga(source, time_v, time_h, vertical, horizontal, location)
+      VALUES (source_n, time_n, now(), value_n, 0.0, loc);
+      RETURN;
+      EXCEPTION WHEN unique_violation THEN
+      --  Loop once more to see if a different insert happened after the update but before our insert.
+      tries = tries + 1;
+      if tries > 1 THEN
+        RETURN;
+      END IF;
+    END;
+  END LOOP;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE FUNCTION impact.add_pga_horizontal(source_n TEXT, longitude_n NUMERIC, latitude_n NUMERIC, time_n TIMESTAMP(6) WITH TIME ZONE, value_n NUMERIC) RETURNS VOID AS
+$$
+DECLARE
+  tries INTEGER = 0;
+BEGIN
+  LOOP
+    UPDATE impact.pga
+    SET horizontal = value_n, time_h = time_n
+    WHERE source = source_n
+          AND pga.horizontal < value_n;
+    IF found THEN
+      RETURN;
+    END IF;
+
+    DECLARE
+      loc GEOGRAPHY = ST_GeogFromWKB(st_AsEWKB(st_setsrid(st_makepoint(longitude_n, latitude_n), 4326)));
+    BEGIN
+      INSERT INTO impact.pga(source, time_v, time_h, vertical, horizontal, location)
+      VALUES (source_n, now(), time_n, 0.0, value_n, loc);
+      RETURN;
+      EXCEPTION WHEN unique_violation THEN
+      --  Loop once more to see if a different insert happened after the update but before our insert.
+      tries = tries + 1;
+      if tries > 1 THEN
+        RETURN;
+      END IF;
+    END;
+  END LOOP;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE FUNCTION impact.add_pgv_vertical(source_n TEXT, longitude_n NUMERIC, latitude_n NUMERIC, time_n TIMESTAMP(6) WITH TIME ZONE, value_n NUMERIC) RETURNS VOID AS
+$$
+DECLARE
+  tries INTEGER = 0;
+BEGIN
+  LOOP
+    UPDATE impact.pgv
+    SET vertical = value_n, time_v = time_n
+    WHERE source = source_n
+          AND pgv.vertical < value_n;
+    IF found THEN
+      RETURN;
+    END IF;
+
+    DECLARE
+      loc GEOGRAPHY = ST_GeogFromWKB(st_AsEWKB(st_setsrid(st_makepoint(longitude_n, latitude_n), 4326)));
+    BEGIN
+      INSERT INTO impact.pgv(source, time_v, time_h, vertical, horizontal, location)
+      VALUES (source_n, time_n, now(), value_n, 0.0, loc);
+      RETURN;
+      EXCEPTION WHEN unique_violation THEN
+      --  Loop once more to see if a different insert happened after the update but before our insert.
+      tries = tries + 1;
+      if tries > 1 THEN
+        RETURN;
+      END IF;
+    END;
+  END LOOP;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE FUNCTION impact.add_pgv_horizontal(source_n TEXT, longitude_n NUMERIC, latitude_n NUMERIC, time_n TIMESTAMP(6) WITH TIME ZONE, value_n NUMERIC) RETURNS VOID AS
+$$
+DECLARE
+  tries INTEGER = 0;
+BEGIN
+  LOOP
+    UPDATE impact.pgv
+    SET horizontal = value_n, time_h = time_n
+    WHERE source = source_n
+          AND pgv.horizontal < value_n;
+    IF found THEN
+      RETURN;
+    END IF;
+
+    DECLARE
+      loc GEOGRAPHY = ST_GeogFromWKB(st_AsEWKB(st_setsrid(st_makepoint(longitude_n, latitude_n), 4326)));
+    BEGIN
+      INSERT INTO impact.pgv(source, time_v, time_h, vertical, horizontal, location)
+      VALUES (source_n, now(), time_n, 0.0, value_n, loc);
+      RETURN;
+      EXCEPTION WHEN unique_violation THEN
+      --  Loop once more to see if a different insert happened after the update but before our insert.
+      tries = tries + 1;
+      if tries > 1 THEN
+        RETURN;
+      END IF;
+    END;
+  END LOOP;
+END;
+$$
+LANGUAGE plpgsql;
+

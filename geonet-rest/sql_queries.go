@@ -338,3 +338,27 @@ row_to_json(
 )) as properties FROM haz.quakeapi as q where publicid = $1
 AND In_newzealand = true
 ORDER BY time DESC  limit 100 ) as f) as fc`
+
+const pgaV2SQL = `SELECT row_to_json(fc)
+FROM ( SELECT 'FeatureCollection' as type, COALESCE(array_to_json(array_agg(f)), '[]') as features
+	FROM (SELECT 'Feature' as type,
+		ST_AsGeoJSON(s.location)::json as geometry,
+		row_to_json(( select l from
+			(
+				select source, horizontal, vertical
+				) as l ))
+as properties from (select source, location, horizontal, vertical
+	FROM impact.pga) as s
+) As f )  as fc`
+
+const pgvV2SQL = `SELECT row_to_json(fc)
+FROM ( SELECT 'FeatureCollection' as type, COALESCE(array_to_json(array_agg(f)), '[]') as features
+	FROM (SELECT 'Feature' as type,
+		ST_AsGeoJSON(s.location)::json as geometry,
+		row_to_json(( select l from
+			(
+				select source, horizontal, vertical
+				) as l ))
+as properties from (select source, location, horizontal, vertical
+	FROM impact.pgv) as s
+) As f )  as fc`

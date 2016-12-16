@@ -27,3 +27,31 @@ CREATE TABLE impact.intensity_measured (
 	location GEOGRAPHY(POINT, 4326) NOT NULL,
 	UNIQUE (source)
 );
+
+-- tables for peak ground acceleration and velocity.
+-- want the maximum values in the last hour for vertical
+-- and horizontal for both pga and pgv.  The max horizontal
+-- might not occur at the same time as the max vertical value
+-- in the hour.  There are usually two horizontal components of
+-- ground motion, was just the max of either component for
+-- horizontal.
+
+CREATE TABLE impact.pga (
+	source TEXT,
+	time_h TIMESTAMP WITH TIME ZONE NOT NULL,
+	time_v TIMESTAMP WITH TIME ZONE NOT NULL,
+	horizontal NUMERIC NOT NULL,
+	vertical NUMERIC NOT NULL,
+	location GEOGRAPHY(POINT, 4326) NOT NULL,
+	UNIQUE (source)
+);
+
+CREATE TABLE impact.pgv (
+	source TEXT,
+	time_h TIMESTAMP WITH TIME ZONE NOT NULL,
+	time_v TIMESTAMP WITH TIME ZONE NOT NULL,
+	horizontal NUMERIC NOT NULL,
+	vertical NUMERIC NOT NULL,
+	location GEOGRAPHY(POINT, 4326) NOT NULL,
+	UNIQUE (source)
+);

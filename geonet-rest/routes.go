@@ -26,6 +26,8 @@ func init() {
 
 	muxV2GeoJSON = http.NewServeMux()
 	muxV2GeoJSON.HandleFunc("/intensity", weft.MakeHandlerAPI(intensityV2))
+	muxV2GeoJSON.HandleFunc("/shaking/pga", weft.MakeHandlerAPI(pgaV2))
+	muxV2GeoJSON.HandleFunc("/shaking/pgv", weft.MakeHandlerAPI(pgvV2))
 	muxV2GeoJSON.HandleFunc("/quake", weft.MakeHandlerAPI(quakesV2))
 	muxV2GeoJSON.HandleFunc("/quake/", weft.MakeHandlerAPI(quakeV2))
 	muxV2GeoJSON.HandleFunc("/quake/history/", weft.MakeHandlerAPI(quakeHistoryV2))
@@ -59,6 +61,7 @@ func init() {
 	muxDefault.HandleFunc("/soh/esb", http.HandlerFunc(sohEsb))
 	muxDefault.HandleFunc("/soh/up", http.HandlerFunc(up))
 	muxDefault.HandleFunc("/soh/impact", http.HandlerFunc(impactSOH))
+	muxDefault.HandleFunc("/soh/shaking", http.HandlerFunc(shakingSOH))
 
 	muxDefault.HandleFunc("/cap/1.2/GPA1.0/quake/", weft.MakeHandlerAPI(capQuake))
 	muxDefault.HandleFunc("/cap/1.2/GPA1.0/feed/atom1.0/quake", weft.MakeHandlerAPI(capQuakeFeed))
@@ -68,6 +71,8 @@ func init() {
 	muxDefault.HandleFunc("/quake/history/", weft.MakeHandlerAPI(quakeHistoryV2))
 	muxDefault.HandleFunc("/quake/stats", weft.MakeHandlerAPI(quakeStatsV2))
 	muxDefault.HandleFunc("/intensity", weft.MakeHandlerAPI(intensityV2))
+	muxDefault.HandleFunc("/shaking/pga", weft.MakeHandlerAPI(pgaV2))
+	muxDefault.HandleFunc("/shaking/pgv", weft.MakeHandlerAPI(pgvV2))
 	muxDefault.HandleFunc("/news/geonet", weft.MakeHandlerAPI(newsV2))
 	muxDefault.HandleFunc("/volcano/val", weft.MakeHandlerAPI(valV2))
 	muxDefault.HandleFunc("/volcano/quake/", weft.MakeHandlerAPI(quakesVolcanoRegionV2))
