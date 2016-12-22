@@ -26,7 +26,6 @@ const volcanoRegionHistoryProtoSQL = `SELECT publicid, time, time, depth, magnit
 			AND time >= (now() - interval '%d days')
 			ORDER BY time DESC`
 
-
 const quakesProtoSQL = `SELECT publicid, time, modificationTime, depth, magnitude, locality,
 				floor(mmid_newzealand) as "mmi",
 				quality,
@@ -232,8 +231,6 @@ SELECT day, count(day)
 FROM perdayInVolcanoRegion GROUP BY day ORDER BY day
 `
 
-
-
 // use this query with fmt.Sprintf to set the days interval e.g.
 //   if rows, err = db.Query(fmt.Sprintf(sumMagsSQL, 365)); err != nil {
 const sumMagsSQL = `WITH mags AS (
@@ -253,7 +250,6 @@ WHERE in_newzealand AND st_covers((select region from haz.volcano hv where id = 
 SELECT magnitude, count(magnitude)
 FROM mags where  time >= (now() - interval '%d days') group by magnitude
 `
-
 
 const quakesNZWWWSQL = `SELECT row_to_json(fc)
 FROM ( SELECT 'FeatureCollection' as type,
@@ -348,7 +344,7 @@ FROM ( SELECT 'FeatureCollection' as type, COALESCE(array_to_json(array_agg(f)),
 				select source, horizontal, vertical
 				) as l ))
 as properties from (select source, location, horizontal, vertical
-	FROM impact.pga) as s
+	FROM impact.pga inner join impact.source using (source)) as s
 ) As f )  as fc`
 
 const pgvV2SQL = `SELECT row_to_json(fc)
@@ -360,5 +356,5 @@ FROM ( SELECT 'FeatureCollection' as type, COALESCE(array_to_json(array_agg(f)),
 				select source, horizontal, vertical
 				) as l ))
 as properties from (select source, location, horizontal, vertical
-	FROM impact.pgv) as s
+	FROM impact.pgv inner join impact.source using (source)) as s
 ) As f )  as fc`

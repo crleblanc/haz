@@ -36,13 +36,21 @@ CREATE TABLE impact.intensity_measured (
 -- ground motion, was just the max of either component for
 -- horizontal.
 
+-- source is for PGA and PGV values.  It is not used
+-- as a formal foreign key so PGA and PGV values can be added
+-- asynchronously.
+CREATE TABLE impact.source (
+	source TEXT,
+	location GEOGRAPHY(POINT, 4326) NOT NULL,
+	UNIQUE (source)
+);
+
 CREATE TABLE impact.pga (
 	source TEXT,
 	time_h TIMESTAMP WITH TIME ZONE NOT NULL,
 	time_v TIMESTAMP WITH TIME ZONE NOT NULL,
 	horizontal NUMERIC NOT NULL,
 	vertical NUMERIC NOT NULL,
-	location GEOGRAPHY(POINT, 4326) NOT NULL,
 	UNIQUE (source)
 );
 
@@ -52,6 +60,5 @@ CREATE TABLE impact.pgv (
 	time_v TIMESTAMP WITH TIME ZONE NOT NULL,
 	horizontal NUMERIC NOT NULL,
 	vertical NUMERIC NOT NULL,
-	location GEOGRAPHY(POINT, 4326) NOT NULL,
 	UNIQUE (source)
 );
