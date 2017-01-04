@@ -3,15 +3,15 @@ package main
 import (
 	"github.com/GeoNet/haz/database"
 	"github.com/GeoNet/haz/msg"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	_ "github.com/lib/pq"
 	"log"
 	"net/http"
 	"net/http/httptest"
 	"time"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/service/s3"
 )
 
 const tolerance float64 = 0.0001
@@ -135,19 +135,23 @@ func setup() {
 		}
 	}
 
-	if err = tdb.SavePGAVertical("WGTN.10", 176.49, -40.2, time.Now().UTC(), 1.2); err != nil {
+	if err = tdb.SaveSource("WGTN.10", 176.49, -40.2); err != nil {
 		log.Fatal(err)
 	}
 
-	if err = tdb.SavePGAHorizontal("WGTN.10", 176.49, -40.2, time.Now().UTC(), 0.6); err != nil {
+	if err = tdb.SavePGAVertical("WGTN.10", time.Now().UTC(), 1.2); err != nil {
 		log.Fatal(err)
 	}
 
-	if err = tdb.SavePGVVertical("WGTN.10", 176.49, -40.2, time.Now().UTC(), 16.1); err != nil {
+	if err = tdb.SavePGAHorizontal("WGTN.10", time.Now().UTC(), 0.6); err != nil {
 		log.Fatal(err)
 	}
 
-	if err = tdb.SavePGVHorizontal("WGTN.10", 176.49, -40.2, time.Now().UTC(), 20.1); err != nil {
+	if err = tdb.SavePGVVertical("WGTN.10", time.Now().UTC(), 16.1); err != nil {
+		log.Fatal(err)
+	}
+
+	if err = tdb.SavePGVHorizontal("WGTN.10", time.Now().UTC(), 20.1); err != nil {
 		log.Fatal(err)
 	}
 
